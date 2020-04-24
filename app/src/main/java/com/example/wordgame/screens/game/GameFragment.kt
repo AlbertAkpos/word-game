@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
 
 import com.example.wordgame.R
 import com.example.wordgame.databinding.FragmentGameBinding
@@ -15,25 +17,22 @@ import com.example.wordgame.databinding.FragmentGameBinding
  */
 class GameFragment : Fragment() {
 
-    private var word = ""
-
-    private var score = 0
-
-    private lateinit var wordList: MutableList<String>
 
     private lateinit var binding: FragmentGameBinding
+
+    private lateinit var gameViewModel: GameViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        gameViewModel = ViewModelProvider(this).get(GameViewModel::class.java)
+
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_game, container, false)
-
-
-        resetList()
-        nextWord()
 
         binding.correctButton.setOnClickListener{onCorrect()}
         binding.skipButton.setOnClickListener{ onSkip() }
+        binding.endGameButton.setOnClickListener {onEndGame()}
 
         updateScoreText()
         updateWordText()
@@ -41,58 +40,34 @@ class GameFragment : Fragment() {
         return binding.root
     }
 
+    private fun onEndGame() {
+        gameFinished()
+    }
+
+    private fun gameFinished(){
+        val action = GameFragmentDirections.actionGameFragmentToScoreFragment()
+        action.score = gameViewModel.score
+        NavHostFragment.findNavController(this).navigate(action)
+    }
+
     private fun updateWordText() {
-        binding.wordText.text = word
+//        binding.wordText.text = word
     }
 
     private fun updateScoreText() {
-        binding.scoreText.text = score.toString()
+//        binding.scoreText.text = score.toString()
     }
 
     private fun onSkip() {
-        score--
-        nextWord()
+//        score--
+//        nextWord()
     }
 
     private fun onCorrect() {
-        score++
-        nextWord()
+//        score++
+//        nextWord()
     }
 
-    private fun nextWord() {
-        if (wordList.isNotEmpty()){
-            //select and remove a word from the list
-            word = wordList.removeAt(0)
-            updateScoreText()
-            updateWordText()
-        }
-    }
 
-    private fun resetList() {
-        wordList = mutableListOf(
-            "queen",
-            "hospital",
-            "basketball",
-            "cat",
-            "change",
-            "snail",
-            "soup",
-            "calendar",
-            "sad",
-            "desk",
-            "guitar",
-            "home",
-            "railway",
-            "zebra",
-            "jelly",
-            "car",
-            "crow",
-            "trade",
-            "bag",
-            "roll",
-            "bubble"
-        )
-        wordList.shuffle()
-    }
 
 }

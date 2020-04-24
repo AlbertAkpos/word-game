@@ -51,5 +51,7 @@ dependencies {
     // Dynamic Feature Module Support
     implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
 
+    //Lifecycle extensions
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
 }
