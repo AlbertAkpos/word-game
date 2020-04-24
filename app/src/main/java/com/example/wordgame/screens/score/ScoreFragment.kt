@@ -6,7 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 
 import com.example.wordgame.R
 import com.example.wordgame.databinding.FragmentScoreBinding
@@ -25,17 +28,27 @@ class ScoreFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding: FragmentScoreBinding =
-            DataBindingUtil.inflate(inflater,
+            DataBindingUtil.inflate(
+                inflater,
                 R.layout.fragment_score, container,
-                false)
+                false
+            )
 
         val score = arguments?.let { ScoreFragmentArgs.fromBundle(it).score }
         scoreViewModelFactory = score?.let { ScoreViewModelFactory(it) }!!
-        scoreViewModel = ViewModelProvider(this, scoreViewModelFactory).get(ScoreViewModel::class.java)
+        scoreViewModel =
+            ViewModelProvider(this, scoreViewModelFactory).get(ScoreViewModel::class.java)
 
+        binding.scoreViewModel = scoreViewModel
+        binding.lifecycleOwner = viewLifecycleOwner
 
-        binding.scoreText.text = scoreViewModel.score.toString()
-    return binding.root
+        scoreViewModel.playAgain.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                findNavController().navigate(ScoreFragmentDirections.actionScoreFragmentToGameFragment())
+                scoreViewModel.onPlayAgainComplete()
+            }
+        })
+        return binding.root
     }
 
 }
