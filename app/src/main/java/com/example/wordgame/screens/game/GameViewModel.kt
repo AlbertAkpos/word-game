@@ -1,11 +1,17 @@
 package com.example.wordgame.screens.game
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class GameViewModel: ViewModel() {
-    private var word = ""
+    private var _word = MutableLiveData("")
+    val word: LiveData<String>
+        get() = _word
 
-    var score = 0
+    private var _score = MutableLiveData(0)
+    val score: LiveData<Int>
+        get() = _score
 
     private lateinit var wordList: MutableList<String>
 
@@ -15,22 +21,20 @@ class GameViewModel: ViewModel() {
         nextWord()
     }
 
-    private fun nextWord() {
+     private fun nextWord() {
         if (wordList.isNotEmpty()){
             //select and remove a word from the list
-            word = wordList.removeAt(0)
-//            updateScoreText()
-//            updateWordText()
+            _word.value = wordList.removeAt(0)
         }
     }
 
-    private fun onSkip() {
-        score--
+    fun onSkip() {
+        _score.value = _score.value?.minus(1)
         nextWord()
     }
 
-    private fun onCorrect() {
-        score++
+     fun onCorrect() {
+        _score.value = _score.value?.plus(1)
         nextWord()
     }
 
@@ -63,4 +67,6 @@ class GameViewModel: ViewModel() {
         )
         wordList.shuffle()
     }
+
+
 }
